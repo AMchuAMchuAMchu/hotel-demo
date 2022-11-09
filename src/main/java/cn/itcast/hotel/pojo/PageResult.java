@@ -19,4 +19,12 @@ public class PageResult {
 
     private List<HotelDoc> hotels;
 
+
+    public PageResult(Long total, List<HotelDoc> hotels) {
+        this.total = total;
+        this.hotels = hotels;
+    }
+
+    public PageResult() {
+    }
 }
