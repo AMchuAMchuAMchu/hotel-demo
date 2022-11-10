@@ -10,6 +10,7 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -35,6 +36,16 @@ class HotelIndexTest {
 
     @Autowired
     private IHotelService iHotelService;
+
+
+    @Test
+    void testUpdateTest02() throws IOException {
+
+        UpdateRequest updateRequest = new UpdateRequest("hotel","38665");
+        updateRequest.doc("starName","十钻");
+        client.update(updateRequest,RequestOptions.DEFAULT);
+
+    }
 
 
     @Test
