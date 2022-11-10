@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSON;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -34,6 +36,21 @@ class HotelIndexTest {
     @Autowired
     private IHotelService iHotelService;
 
+
+    @Test
+    void testGetById() throws IOException {
+
+        GetRequest getRequest = new GetRequest("hotel");
+        getRequest.id("38665");
+        GetResponse documentFields = client.get(getRequest, RequestOptions.DEFAULT);
+
+        String sourceAsString = documentFields.getSourceAsString();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println(sourceAsString);
+
+    }
 
     @Test
     void testInsertAll() throws IOException {
@@ -77,12 +94,7 @@ class HotelIndexTest {
     }
 
 
-    @BeforeEach
-    void setUp() {
-        client = new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://192.168.150.101:9200")
-        ));
-    }
+
 
     @AfterEach
     void tearDown() throws IOException {
