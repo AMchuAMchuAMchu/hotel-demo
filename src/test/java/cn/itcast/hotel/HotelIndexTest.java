@@ -42,7 +42,7 @@ class HotelIndexTest {
     void testUpdateTest02() throws IOException {
 
         UpdateRequest updateRequest = new UpdateRequest("hotel","38665");
-        updateRequest.doc("starName","十钻");
+        updateRequest.doc("starName","二钻");
         client.update(updateRequest,RequestOptions.DEFAULT);
 
     }
