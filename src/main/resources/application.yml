@@ -7,6 +7,7 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   elasticsearch:
+    connection-timeout: 5s
     uris: http://192.168.200.130:9200
 logging:
   level:
