@@ -103,12 +103,6 @@ class HotelDocumentTest {
         client.bulk(request, RequestOptions.DEFAULT);
     }
 
-    @BeforeEach
-    void setUp() {
-        client = new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://192.168.150.101:9200")
-        ));
-    }
 
     @AfterEach
     void tearDown() throws IOException {
