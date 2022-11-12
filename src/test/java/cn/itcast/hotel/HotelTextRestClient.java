@@ -1,5 +1,7 @@
 package cn.itcast.hotel;
 
+import cn.itcast.hotel.pojo.HotelDoc;
+import com.alibaba.fastjson.JSON;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -48,7 +50,9 @@ public class HotelTextRestClient {
         for (SearchHit hit : hits) {
 //            System.out.println(hit);
             String sourceAsString = hit.getSourceAsString();
-            System.out.println(sourceAsString);
+//            System.out.println(sourceAsString);
+            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+            System.out.println(hotelDoc);
         }
 
     }
