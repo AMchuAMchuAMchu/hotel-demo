@@ -60,25 +60,22 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         }
     }
 
-    private PageResult handleResponse(SearchResponse response) {
-        //1.0 解析响应
-        SearchHits searchHits = response.getHits();
-        //2.0 获取总条数
+    private PageResult handleResponse(SearchResponse search) {
+        SearchHits searchHits = search.getHits();
+
         long total = searchHits.getTotalHits().value;
-        //3.0 获取命中的文档数组
+
         SearchHit[] hits = searchHits.getHits();
-        //4.0 新建集合存储数据
+
+        System.out.println("一共搜索到了:" + total + "条数据.O(∩_∩)O哈哈~");
+
+
         ArrayList<HotelDoc> hotelDocs = new ArrayList<>();
-        //5.0 遍历
         for (SearchHit hit : hits) {
             String sourceAsString = hit.getSourceAsString();
-
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
-
             hotelDocs.add(hotelDoc);
-
         }
-
         return new PageResult(total,hotelDocs);
 
 
