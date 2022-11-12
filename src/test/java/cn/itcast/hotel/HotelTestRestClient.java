@@ -11,13 +11,17 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Description ==> TODO
@@ -35,15 +39,26 @@ public class HotelTestRestClient {
     private RestHighLevelClient rhlc;
 
 
+    @Test
+    void testHighlight() throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest("hotel");
+        searchRequest.source().query(QueryBuilders.matchQuery("all","如家"));
+        searchRequest.source().highlighter(new HighlightBuilder().field("brand").requireFieldMatch(false));
+        SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+
+        handleResponse(search);
+    }
+
 
     @Test
     void testSortPage() throws IOException {
 
-        int page = 1,size = 5;
+        int page = 1, size = 5;
         SearchRequest searchRequest = new SearchRequest("hotel");
         searchRequest.source().query(QueryBuilders.matchAllQuery());
         searchRequest.source().sort("price", SortOrder.ASC);
-        searchRequest.source().from((page-1)*size).size(size);
+        searchRequest.source().from((page - 1) * size).size(size);
         SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
         handleResponse(searchResponse);
 
@@ -59,7 +74,7 @@ public class HotelTestRestClient {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
 //        boolQuery.must(QueryBuilders.termQuery("city","杭州"));
-        boolQuery.must(QueryBuilders.termQuery("city","上海"));
+        boolQuery.must(QueryBuilders.termQuery("city", "上海"));
 
         boolQuery.filter(QueryBuilders.rangeQuery("price").lte(250));
 
@@ -70,8 +85,6 @@ public class HotelTestRestClient {
         handleResponse(searchResponse);
 
 
-
-
     }
 
 
@@ -80,8 +93,7 @@ public class HotelTestRestClient {
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        searchRequest.source().query(QueryBuilders.matchQuery("brand","如家"));
-
+        searchRequest.source().query(QueryBuilders.matchQuery("brand", "如家"));
 
 
         SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
@@ -98,14 +110,24 @@ public class HotelTestRestClient {
 
         SearchHit[] hits = searchHits.getHits();
 
-        System.out.println("一共搜索到了:"+value+"条数据.O(∩_∩)O哈哈~");
+        System.out.println("一共搜索到了:" + value + "条数据.O(∩_∩)O哈哈~");
 
 
         for (SearchHit hit : hits) {
 //            System.out.println(hit);
             String sourceAsString = hit.getSourceAsString();
 //            System.out.println(sourceAsString);
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            String s = null;
+            if (!CollectionUtils.isEmpty(highlightFields)){
+                HighlightField name = highlightFields.get("name");
+                if (name != null){
+                    s = name.getFragments()[0].toString();
+                }
+            }
+
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+            hotelDoc.setBrand(s);
             System.out.println(hotelDoc);
         }
     }
