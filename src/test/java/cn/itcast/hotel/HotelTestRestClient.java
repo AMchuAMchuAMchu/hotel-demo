@@ -44,7 +44,7 @@ public class HotelTestRestClient {
 
         SearchRequest searchRequest = new SearchRequest("hotel");
         searchRequest.source().query(QueryBuilders.matchQuery("all","如家"));
-        searchRequest.source().highlighter(new HighlightBuilder().field("brand").requireFieldMatch(false));
+        searchRequest.source().highlighter(new HighlightBuilder().field("name").requireFieldMatch(false));
         SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
         handleResponse(search);
