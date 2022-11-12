@@ -1,5 +1,6 @@
 package cn.itcast.hotel;
 
+import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -38,6 +39,11 @@ public class HotelTextRestClient {
         SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
         SearchHit[] hits = search.getHits().getHits();
+
+        long value = search.getHits().getTotalHits().value;
+
+        System.out.println("一共搜索到了:"+value+"条");
+
 
         for (SearchHit hit : hits) {
             System.out.println(hit);
