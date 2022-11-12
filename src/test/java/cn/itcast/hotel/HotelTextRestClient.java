@@ -9,6 +9,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,22 @@ public class HotelTextRestClient {
     @Autowired
     private RestHighLevelClient rhlc;
 
+
+    @Test
+    void testTerm() throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest("hotel");
+
+        searchRequest.source().query(QueryBuilders.termQuery("city","杭州"));
+
+        SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+
+        handleResponse(searchResponse);
+
+
+    }
+
+
     @Test
     void testMatchAll() throws IOException {
 
@@ -38,11 +55,21 @@ public class HotelTextRestClient {
 
         searchRequest.source().query(QueryBuilders.matchQuery("brand","如家"));
 
+
+
         SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
-        SearchHit[] hits = search.getHits().getHits();
+        //处理结果的方法
+        handleResponse(search);
 
-        long value = search.getHits().getTotalHits().value;
+    }
+
+    private void handleResponse(SearchResponse search) {
+        SearchHits searchHits = search.getHits();
+
+        long value = searchHits.getTotalHits().value;
+
+        SearchHit[] hits = searchHits.getHits();
 
         System.out.println("一共搜索到了:"+value+"条数据.O(∩_∩)O哈哈~");
 
@@ -54,7 +81,6 @@ public class HotelTextRestClient {
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
             System.out.println(hotelDoc);
         }
-
     }
 
     @AfterEach
