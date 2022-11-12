@@ -41,7 +41,7 @@ public class HotelTextRestClient {
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-        boolQuery.must(QueryBuilders.termQuery("city","杭州"));
+        boolQuery.must(QueryBuilders.termQuery("city","上海"));
 
         boolQuery.filter(QueryBuilders.rangeQuery("price").lte(250));
 
