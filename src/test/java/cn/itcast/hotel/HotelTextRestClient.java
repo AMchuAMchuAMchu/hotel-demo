@@ -42,11 +42,13 @@ public class HotelTextRestClient {
 
         long value = search.getHits().getTotalHits().value;
 
-        System.out.println("一共搜索到了:"+value+"条");
+        System.out.println("一共搜索到了:"+value+"条数据.O(∩_∩)O哈哈~");
 
 
         for (SearchHit hit : hits) {
-            System.out.println(hit);
+//            System.out.println(hit);
+            String sourceAsString = hit.getSourceAsString();
+            System.out.println(sourceAsString);
         }
 
     }
