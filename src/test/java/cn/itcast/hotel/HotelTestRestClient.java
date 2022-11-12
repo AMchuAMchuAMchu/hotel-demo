@@ -11,6 +11,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,27 @@ import java.io.IOException;
  * Author ==> _02雪乃赤瞳楪祈校条祭_艾米丽可锦木千束木更七草荠_制作委员会_start
  */
 @SpringBootTest
-public class HotelTextRestClient {
+public class HotelTestRestClient {
 
 
     @Autowired
     private RestHighLevelClient rhlc;
+
+
+
+    @Test
+    void testSortPage() throws IOException {
+
+        int page = 1,size = 5;
+        SearchRequest searchRequest = new SearchRequest("hotel");
+        searchRequest.source().query(QueryBuilders.matchAllQuery());
+        searchRequest.source().sort("price", SortOrder.ASC);
+        searchRequest.source().from((page-1)*size).size(size);
+        SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+        handleResponse(searchResponse);
+
+
+    }
 
 
     @Test
@@ -41,6 +58,7 @@ public class HotelTextRestClient {
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
+//        boolQuery.must(QueryBuilders.termQuery("city","杭州"));
         boolQuery.must(QueryBuilders.termQuery("city","上海"));
 
         boolQuery.filter(QueryBuilders.rangeQuery("price").lte(250));
@@ -50,6 +68,8 @@ public class HotelTextRestClient {
         SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
         handleResponse(searchResponse);
+
+
 
 
     }
