@@ -38,7 +38,7 @@ public class HotelTextRestClient {
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        searchRequest.source().query(QueryBuilders.termQuery("city","杭州"));
+        searchRequest.source().query(QueryBuilders.matchQuery("city","杭州"));
 
         SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
