@@ -7,6 +7,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -38,7 +39,13 @@ public class HotelTextRestClient {
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        searchRequest.source().query(QueryBuilders.matchQuery("city","杭州"));
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        boolQuery.must(QueryBuilders.termQuery("city","杭州"));
+
+        boolQuery.filter(QueryBuilders.rangeQuery("price").lte(250));
+
+        searchRequest.source().query(boolQuery);
 
         SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
