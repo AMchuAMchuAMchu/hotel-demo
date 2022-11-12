@@ -127,7 +127,7 @@ public class HotelTestRestClient {
             }
 
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
-            hotelDoc.setBrand(s);
+            hotelDoc.setName(s);
             System.out.println(hotelDoc);
         }
     }
