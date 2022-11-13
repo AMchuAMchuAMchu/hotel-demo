@@ -21,4 +21,14 @@ public class RequestParams {
 
     private String sortBy;
 
+    private String city;
+
+    private String brand;
+
+    private String starName;
+
+    private Integer minPrice;
+
+    private Integer maxPrice;
+
 }
