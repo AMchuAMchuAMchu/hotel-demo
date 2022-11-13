@@ -25,9 +25,9 @@ public class HotelController {
     @Autowired
     private IHotelService iHotelService;
 
-    @PostMapping("/list")
-    public PageResult search(@RequestBody RequestParams requestParams){
-        return iHotelService.search(requestParams);
-    }
+//    @PostMapping("/list")
+//    public PageResult search(@RequestBody RequestParams requestParams){
+//        return iHotelService.search(requestParams);
+//    }
 
 }
