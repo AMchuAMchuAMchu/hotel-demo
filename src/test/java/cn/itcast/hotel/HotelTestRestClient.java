@@ -39,6 +39,8 @@ public class HotelTestRestClient {
     private RestHighLevelClient rhlc;
 
 
+
+
     @Test
     void testHighlight() throws IOException {
 

@@ -78,6 +78,11 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.termQuery("brand", requestParams.getBrand()));
         }
 
+        //星级条件
+        if (requestParams.getStarName() != null && !requestParams.getStarName().equals("")) {
+            boolQuery.filter(QueryBuilders.termQuery("starName",requestParams.getStarName()));
+        }
+
         //价格条件
         if (requestParams.getMinPrice() != null && requestParams.getMaxPrice() != null) {
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(requestParams.getMinPrice()).lte(requestParams.getMaxPrice()));
@@ -99,6 +104,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             String sourceAsString = hit.getSourceAsString();
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
             hotelDocs.add(hotelDoc);
+            System.out.println(hotelDoc);
         }
         return new PageResult(total, hotelDocs);
 
