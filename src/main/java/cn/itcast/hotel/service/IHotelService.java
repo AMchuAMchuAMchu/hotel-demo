@@ -8,5 +8,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.io.IOException;
 
 public interface IHotelService extends IService<Hotel> {
-    PageResult search(RequestParams requestParams) throws IOException;
+    PageResult search(RequestParams requestParams);
 }

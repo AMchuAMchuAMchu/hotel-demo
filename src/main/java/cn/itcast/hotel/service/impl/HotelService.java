@@ -32,13 +32,18 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     private RestHighLevelClient rhlc;
 
     @Override
-    public PageResult search(RequestParams params) throws IOException {
+    public PageResult search(RequestParams params){
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
         searchRequest.source().query(QueryBuilders.matchAllQuery());
 
-        SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         SearchHits responseHits = searchResponse.getHits();
 
