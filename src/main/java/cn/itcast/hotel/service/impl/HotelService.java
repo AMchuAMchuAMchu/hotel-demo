@@ -8,7 +8,7 @@ import cn.itcast.hotel.pojo.RequestParams;
 import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 @Service
 public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHotelService {
 
@@ -31,77 +32,33 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     private RestHighLevelClient rhlc;
 
     @Override
-    public PageResult search(RequestParams requestParams) {
-        try {
-            //1.0 准备Request
-            SearchRequest request = new SearchRequest("hotel");
+    public PageResult search(RequestParams params) throws IOException {
 
-            buildBasicQuery(requestParams, request);
-            int page = requestParams.getPage();
-            int size = requestParams.getSize();
-            request.source().from((page - 1) * size).size(size);
-            //4.0 解析响应
-            SearchResponse search = rhlc.search(request, RequestOptions.DEFAULT);
-            return handleResponse(search);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+        SearchRequest searchRequest = new SearchRequest("hotel");
 
-    private void buildBasicQuery(RequestParams params, SearchRequest request) {
-        //2.0 准备DSL
-        String key = params.getKey();
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        //3.0 发送请求,得到响应
-        if (StringUtils.isNotBlank(key)) {
-            // 不为空，根据关键字查询
-            boolQuery.must(QueryBuilders.matchQuery("all", key));
-        } else {
-            // 为空，查询所有
-            boolQuery.must(QueryBuilders.matchAllQuery());
-        }
+        searchRequest.source().query(QueryBuilders.matchAllQuery());
 
-        // 1.2.品牌
-        String brand = params.getBrand();
-        if (StringUtils.isNotBlank(brand)) {
-            boolQuery.filter(QueryBuilders.termQuery("brand", brand));
-        }
-        // 1.3.城市
-        String city = params.getCity();
-        if (StringUtils.isNotBlank(city)) {
-            boolQuery.filter(QueryBuilders.termQuery("city", city));
-        }
-        // 1.4.星级
-        String starName = params.getStarName();
-        if (StringUtils.isNotBlank(starName)) {
-            boolQuery.filter(QueryBuilders.termQuery("starName", starName));
-        }
-        // 1.5.价格范围
-        Integer minPrice = params.getMinPrice();
-        Integer maxPrice = params.getMaxPrice();
-        if (minPrice != null && maxPrice != null) {
-            maxPrice = maxPrice == 0 ? Integer.MAX_VALUE : maxPrice;
-            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(minPrice).lte(maxPrice));
-        }
-    }
+        SearchResponse searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
 
-    private PageResult handleResponse(SearchResponse search) {
+        SearchHits responseHits = searchResponse.getHits();
 
-        SearchHits searchHits = search.getHits();
+        long totalHits = responseHits.getTotalHits().value;
 
-        long total = searchHits.getTotalHits().value;
-
-        SearchHit[] hits = searchHits.getHits();
-
-        System.out.println("一共搜索到了:" + total + "条数据.O(∩_∩)O哈哈~");
+        SearchHit[] searchHits = responseHits.getHits();
 
         ArrayList<HotelDoc> hotelDocs = new ArrayList<>();
-        for (SearchHit hit : hits) {
-            String sourceAsString = hit.getSourceAsString();
-            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+
+        for (SearchHit searchHit : searchHits) {
+            String sourceAsString = searchHit.getSourceAsString();
+
+            Hotel hotel = JSON.parseObject(sourceAsString, Hotel.class);
+
+            HotelDoc hotelDoc = new HotelDoc(hotel);
+
             hotelDocs.add(hotelDoc);
-            System.out.println(hotelDoc);
+
         }
-        return new PageResult(total, hotelDocs);
+
+        return new PageResult(totalHits,hotelDocs);
     }
 }

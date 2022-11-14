@@ -10,6 +10,8 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -17,6 +19,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +40,25 @@ class HotelIndexTest {
 
     @Autowired
     private IHotelService iHotelService;
+
+
+
+    @Test
+    void testSearchAll02() throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest("hotel");
+
+        searchRequest.source().query(QueryBuilders.matchAllQuery());
+
+        SearchResponse search = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        SearchHit[] hits = search.getHits().getHits();
+
+        for (SearchHit hit : hits) {
+            System.out.println(hit);
+        }
+
+    }
 
 
     @Test
