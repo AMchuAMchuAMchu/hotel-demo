@@ -27,6 +27,7 @@ import java.util.List;
 @SpringBootTest
 class HotelDocumentTest {
 
+    @Autowired
     private RestHighLevelClient client;
 
     @Autowired

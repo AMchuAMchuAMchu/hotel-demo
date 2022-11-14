@@ -43,22 +43,7 @@ class HotelIndexTest {
 
 
 
-    @Test
-    void testSearchAll02() throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest("hotel");
-
-        searchRequest.source().query(QueryBuilders.matchAllQuery());
-
-        SearchResponse search = client.search(searchRequest, RequestOptions.DEFAULT);
-
-        SearchHit[] hits = search.getHits().getHits();
-
-        for (SearchHit hit : hits) {
-            System.out.println(hit);
-        }
-
-    }
 
 
     @Test

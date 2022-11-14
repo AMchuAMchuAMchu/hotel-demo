@@ -56,11 +56,10 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         for (SearchHit searchHit : searchHits) {
             String sourceAsString = searchHit.getSourceAsString();
 
-            Hotel hotel = JSON.parseObject(sourceAsString, Hotel.class);
+            HotelDoc hotel = JSON.parseObject(sourceAsString, HotelDoc.class);
 
-            HotelDoc hotelDoc = new HotelDoc(hotel);
 
-            hotelDocs.add(hotelDoc);
+
 
         }
 
