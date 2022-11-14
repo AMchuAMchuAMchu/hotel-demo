@@ -38,6 +38,19 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         searchRequest.source().query(QueryBuilders.matchAllQuery());
 
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+
+        boolQuery.must(QueryBuilders.termQuery("brand",params.getBrand()));
+
+        boolQuery.filter(QueryBuilders.termQuery("city",params.getCity()));
+
+        boolQuery.filter(QueryBuilders.termQuery("starName",params.getStarName()));
+
+        boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
+
+
+
         SearchResponse searchResponse = null;
         try {
             searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
@@ -45,6 +58,11 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             e.printStackTrace();
         }
 
+        return getPageResult(searchResponse);
+
+    }
+
+    private PageResult getPageResult(SearchResponse searchResponse) {
         SearchHits responseHits = searchResponse.getHits();
 
         long totalHits = responseHits.getTotalHits().value;
@@ -58,11 +76,9 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
             HotelDoc hotel = JSON.parseObject(sourceAsString, HotelDoc.class);
 
-
-
-
+            hotelDocs.add(hotel);
         }
 
-        return new PageResult(totalHits,hotelDocs);
+        return new PageResult(totalHits, hotelDocs);
     }
 }
