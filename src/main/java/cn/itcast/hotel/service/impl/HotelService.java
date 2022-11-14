@@ -8,26 +8,20 @@ import cn.itcast.hotel.pojo.RequestParams;
 import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.lucene.search.TotalHits;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
 
 @Service
 public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHotelService {
@@ -43,8 +37,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             SearchRequest request = new SearchRequest("hotel");
 
             buildBasicQuery(requestParams, request);
-
-
             int page = requestParams.getPage();
             int size = requestParams.getSize();
             request.source().from((page - 1) * size).size(size);
@@ -56,40 +48,45 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         }
     }
 
-    private void buildBasicQuery(RequestParams requestParams, SearchRequest request) {
+    private void buildBasicQuery(RequestParams params, SearchRequest request) {
         //2.0 准备DSL
-        String key = requestParams.getKey();
-        //3.0 发送请求,得到响应
-        if (key == null || "".equals(key)) {
-            request.source().query(QueryBuilders.matchAllQuery());
-        } else {
-            request.source().query(QueryBuilders.matchQuery("all", key));
-        }
-
+        String key = params.getKey();
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
-        //城市条件
-        if (requestParams.getCity() != null && !requestParams.getCity().equals("")) {
-            boolQuery.filter(QueryBuilders.termQuery("city", requestParams.getCity()));
+        //3.0 发送请求,得到响应
+        if (StringUtils.isNotBlank(key)) {
+            // 不为空，根据关键字查询
+            boolQuery.must(QueryBuilders.matchQuery("all", key));
+        } else {
+            // 为空，查询所有
+            boolQuery.must(QueryBuilders.matchAllQuery());
         }
 
-        //品牌条件
-        if (requestParams.getBrand() != null && !requestParams.getBrand().equals("")) {
-            boolQuery.filter(QueryBuilders.termQuery("brand", requestParams.getBrand()));
+        // 1.2.品牌
+        String brand = params.getBrand();
+        if (StringUtils.isNotBlank(brand)) {
+            boolQuery.filter(QueryBuilders.termQuery("brand", brand));
         }
-
-        //星级条件
-        if (requestParams.getStarName() != null && !requestParams.getStarName().equals("")) {
-            boolQuery.filter(QueryBuilders.termQuery("starName",requestParams.getStarName()));
+        // 1.3.城市
+        String city = params.getCity();
+        if (StringUtils.isNotBlank(city)) {
+            boolQuery.filter(QueryBuilders.termQuery("city", city));
         }
-
-        //价格条件
-        if (requestParams.getMinPrice() != null && requestParams.getMaxPrice() != null) {
-            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(requestParams.getMinPrice()).lte(requestParams.getMaxPrice()));
+        // 1.4.星级
+        String starName = params.getStarName();
+        if (StringUtils.isNotBlank(starName)) {
+            boolQuery.filter(QueryBuilders.termQuery("starName", starName));
+        }
+        // 1.5.价格范围
+        Integer minPrice = params.getMinPrice();
+        Integer maxPrice = params.getMaxPrice();
+        if (minPrice != null && maxPrice != null) {
+            maxPrice = maxPrice == 0 ? Integer.MAX_VALUE : maxPrice;
+            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(minPrice).lte(maxPrice));
         }
     }
 
     private PageResult handleResponse(SearchResponse search) {
+
         SearchHits searchHits = search.getHits();
 
         long total = searchHits.getTotalHits().value;
@@ -97,7 +94,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         SearchHit[] hits = searchHits.getHits();
 
         System.out.println("一共搜索到了:" + total + "条数据.O(∩_∩)O哈哈~");
-
 
         ArrayList<HotelDoc> hotelDocs = new ArrayList<>();
         for (SearchHit hit : hits) {
@@ -107,7 +103,5 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             System.out.println(hotelDoc);
         }
         return new PageResult(total, hotelDocs);
-
-
     }
 }
