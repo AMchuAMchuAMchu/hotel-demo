@@ -43,8 +43,9 @@ public class TestTest01 {
         for (SearchHit hit : hits) {
 //            System.out.println(hit);
             String sourceAsString = hit.getSourceAsString();
-            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
-            System.out.println(hotelDoc);
+//            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+            Hotel hotel = JSON.parseObject(sourceAsString, Hotel.class);
+            System.out.println(hotel);
         }
 
     }
