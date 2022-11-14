@@ -32,7 +32,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     private RestHighLevelClient rhlc;
 
     @Override
-    public PageResult search(RequestParams params){
+    public PageResult search(RequestParams params) {
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
@@ -41,14 +41,20 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
 
-        boolQuery.must(QueryBuilders.termQuery("brand",params.getBrand()));
+        if (params.getBrand() != null && !params.getBrand().equals("")) {
+            boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
+        }
+        if (params.getCity() != null && !params.getCity().equals("")) {
+            boolQuery.filter(QueryBuilders.termQuery("city", params.getCity()));
 
-        boolQuery.filter(QueryBuilders.termQuery("city",params.getCity()));
+        }
+        if (params.getStarName() != null && !params.getStarName().equals("")) {
+            boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
 
-        boolQuery.filter(QueryBuilders.termQuery("starName",params.getStarName()));
-
-        boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
-
+        }
+        if (params.getMaxPrice() != null && params.getMinPrice()!=null) {
+            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
+        }
 
 
         SearchResponse searchResponse = null;
