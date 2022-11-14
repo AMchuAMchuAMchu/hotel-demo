@@ -46,16 +46,15 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         }
         if (params.getCity() != null && !params.getCity().equals("")) {
             boolQuery.filter(QueryBuilders.termQuery("city", params.getCity()));
-
         }
         if (params.getStarName() != null && !params.getStarName().equals("")) {
             boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
-
         }
         if (params.getMaxPrice() != null && params.getMinPrice()!=null) {
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
         }
 
+        searchRequest.source().query(boolQuery);
 
         SearchResponse searchResponse = null;
         try {
