@@ -73,7 +73,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
 
         FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
-                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", "true")
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
         });
 

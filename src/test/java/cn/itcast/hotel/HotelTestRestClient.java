@@ -56,7 +56,7 @@ public class HotelTestRestClient {
     @Test
     void testSortPage() throws IOException {
 
-        int page = 7, size = 5;
+        int page = 6, size = 5;
         SearchRequest searchRequest = new SearchRequest("hotel");
         searchRequest.source().query(QueryBuilders.matchAllQuery());
         searchRequest.source().sort("price", SortOrder.ASC);
