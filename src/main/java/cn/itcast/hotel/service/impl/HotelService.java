@@ -36,7 +36,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        searchRequest.source().query(QueryBuilders.matchAllQuery());
+        searchRequest.source().query(QueryBuilders.matchQuery("all",params.getKey()));
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
