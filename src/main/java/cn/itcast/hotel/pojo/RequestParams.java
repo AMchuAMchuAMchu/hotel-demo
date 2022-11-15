@@ -1,6 +1,8 @@
 package cn.itcast.hotel.pojo;
 
 import lombok.Data;
+import org.elasticsearch.index.translog.Translog;
+
 
 /**
  * Description ==> TODO
@@ -30,5 +32,7 @@ public class RequestParams {
     private Integer minPrice;
 
     private Integer maxPrice;
+
+    private String location;
 
 }

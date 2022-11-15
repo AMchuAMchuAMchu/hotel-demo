@@ -14,13 +14,19 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortMode;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.Location;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -60,6 +66,14 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         searchRequest.source().from((page - 1) * size).size(size);
 
+        String location = params.getLocation();
+
+        if (location!=null&&!location.equals("")){
+            searchRequest.source()
+                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
+                            .order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS));
+        }
+
 
         //记得放回query部分作为一个条件查询的说...
         searchRequest.source().query(boolQuery);
@@ -88,6 +102,13 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             String sourceAsString = searchHit.getSourceAsString();
 
             HotelDoc hotel = JSON.parseObject(sourceAsString, HotelDoc.class);
+
+            Object[] sortValues = searchHit.getSortValues();
+
+            if (sortValues.length>0){
+                Object sortValue = sortValues[0];
+                hotel.setDistance(sortValue);
+            }
 
             hotelDocs.add(hotel);
         }
