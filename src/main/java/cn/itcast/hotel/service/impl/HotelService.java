@@ -73,6 +73,14 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         }
 
 
+
+        Integer page = params.getPage();
+
+        Integer size = params.getSize();
+
+        searchRequest.source().from((page - 1) * size).size(size);
+
+
         FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
                 new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
@@ -81,14 +89,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
 
         searchRequest.source().query(isAD);
-
-
-        Integer page = params.getPage();
-
-        Integer size = params.getSize();
-
-        searchRequest.source().from((page - 1) * size).size(size);
-
 
 
         //记得放回query部分作为一个条件查询的说...
