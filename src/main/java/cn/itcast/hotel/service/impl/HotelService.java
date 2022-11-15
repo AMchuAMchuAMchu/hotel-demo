@@ -77,7 +77,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
         });
 
-        searchRequest.source().query(isAD);
+//        searchRequest.source().query(isAD);
 
 
         Integer page = params.getPage();
