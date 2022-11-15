@@ -38,6 +38,11 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         searchRequest.source().query(QueryBuilders.matchQuery("all",params.getKey()));
 
+        String key = params.getKey();
+        System.out.println(key);
+        System.out.println(key);
+        System.out.println(key);
+
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (params.getBrand() != null && !params.getBrand().equals("")) {
