@@ -65,21 +65,22 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         String location = params.getLocation();
 
 
+        if (location!=null&&!location.equals("")){
+            searchRequest.source()
+                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
+                            .order(SortOrder.ASC)
+                            .unit(DistanceUnit.KILOMETERS));
+        }
+
+
         FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
                 new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
         });
 
 
-        if (location!=null&&!location.equals("")){
-            searchRequest.source()
-                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
-                            .order(SortOrder.DESC)
-                            .unit(DistanceUnit.KILOMETERS));
-        }
 
-
-//        searchRequest.source().query(isAD);
+        searchRequest.source().query(isAD);
 
 
         Integer page = params.getPage();
