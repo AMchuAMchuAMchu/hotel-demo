@@ -7,6 +7,7 @@ import cn.itcast.hotel.pojo.PageResult;
 import cn.itcast.hotel.pojo.RequestParams;
 import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
@@ -36,15 +37,10 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        searchRequest.source().query(QueryBuilders.matchQuery("all",params.getKey()));
-
-        String key = params.getKey();
-        System.out.println(key);
-        System.out.println(key);
-        System.out.println(key);
-
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
+        if (StringUtils.isNotBlank(params.getKey())) {
+            boolQuery.must(QueryBuilders.matchQuery("all", params.getKey()));
+        }
         if (params.getBrand() != null && !params.getBrand().equals("")) {
             boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
         }
@@ -54,7 +50,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         if (params.getStarName() != null && !params.getStarName().equals("")) {
             boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
         }
-        if (params.getMaxPrice() != null && params.getMinPrice()!=null) {
+        if (params.getMaxPrice() != null && params.getMinPrice() != null) {
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
         }
 
@@ -62,8 +58,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         Integer size = params.getSize();
 
-        searchRequest.source().from((page-1)*size).size(size);
-
+        searchRequest.source().from((page - 1) * size).size(size);
 
 
         //记得放回query部分作为一个条件查询的说...
