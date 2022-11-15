@@ -74,7 +74,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         if (location!=null&&!location.equals("")){
             searchRequest.source()
                     .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
-                            .order(SortOrder.ASC)
+                            .order(SortOrder.DESC)
                             .unit(DistanceUnit.KILOMETERS));
         }
 
