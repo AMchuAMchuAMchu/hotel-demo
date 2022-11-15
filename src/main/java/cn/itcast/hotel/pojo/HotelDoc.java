@@ -18,15 +18,9 @@ public class HotelDoc {
     private String location;
     private String pic;
     private Object distance;
-    private String isAD;
+    private Boolean isAD;
 
-    public String getssAD() {
-        return isAD;
-    }
 
-    public void setisAD(String isAD) {
-        this.isAD = isAD;
-    }
 
     public HotelDoc(Hotel hotel) {
         this.id = hotel.getId();
