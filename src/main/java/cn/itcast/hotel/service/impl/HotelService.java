@@ -62,23 +62,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
         }
 
-        String location = params.getLocation();
-
-
-        if (location!=null&&!location.equals("")){
-            searchRequest.source()
-                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
-                            .order(SortOrder.ASC)
-                            .unit(DistanceUnit.KILOMETERS));
-        }
-
-
-
-        Integer page = params.getPage();
-
-        Integer size = params.getSize();
-
-        searchRequest.source().from((page - 1) * size).size(size);
 
 
         FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
@@ -90,9 +73,22 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         searchRequest.source().query(isAD);
 
+        Integer page = params.getPage();
 
-        //记得放回query部分作为一个条件查询的说...
-        searchRequest.source().query(boolQuery);
+        Integer size = params.getSize();
+
+        searchRequest.source().from((page - 1) * size).size(size);
+
+
+        String location = params.getLocation();
+
+
+        if (location!=null&&!location.equals("")){
+            searchRequest.source()
+                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
+                            .order(SortOrder.ASC)
+                            .unit(DistanceUnit.KILOMETERS));
+        }
 
         SearchResponse searchResponse = null;
         try {
