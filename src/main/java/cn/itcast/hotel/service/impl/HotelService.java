@@ -40,7 +40,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-
         if (params.getBrand() != null && !params.getBrand().equals("")) {
             boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
         }
@@ -54,6 +53,15 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
         }
 
+        Integer page = params.getPage();
+
+        Integer size = params.getSize();
+
+        searchRequest.source().from((page-1)*size).size(size);
+
+
+
+        //记得放回query部分作为一个条件查询的说...
         searchRequest.source().query(boolQuery);
 
         SearchResponse searchResponse = null;
