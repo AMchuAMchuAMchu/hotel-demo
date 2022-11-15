@@ -30,9 +30,9 @@ public class HotelController {
         return iHotelService.search(requestParams);
     }
 
-    @PostMapping("/filters")
-    public PageResult filter(@RequestBody RequestParams requestParams){
-        return iHotelService.search(requestParams);
-    }
+//    @PostMapping("/filters")
+//    public PageResult filter(@RequestBody RequestParams requestParams){
+//        return iHotelService.search(requestParams);
+//    }
 
 }
