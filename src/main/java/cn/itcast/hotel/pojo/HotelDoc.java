@@ -18,7 +18,7 @@ public class HotelDoc {
     private String location;
     private String pic;
     private Object distance;
-    private Boolean isAD;
+    private String isAD;
 
 
 
