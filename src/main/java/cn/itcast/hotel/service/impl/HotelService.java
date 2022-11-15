@@ -64,6 +64,13 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         String location = params.getLocation();
 
+
+        FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
+                        ,ScoreFunctionBuilders.weightFactorFunction(10))
+        });
+
+
         if (location!=null&&!location.equals("")){
             searchRequest.source()
                     .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
@@ -71,11 +78,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
                             .unit(DistanceUnit.KILOMETERS));
         }
 
-
-        FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
-                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
-                        ,ScoreFunctionBuilders.weightFactorFunction(10))
-        });
 
 //        searchRequest.source().query(isAD);
 
