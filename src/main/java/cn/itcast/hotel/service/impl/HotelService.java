@@ -127,7 +127,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
     private ArrayList<String> getAggByName(Aggregations aggregations,String aggName) {
         ArrayList<String> brandList = new ArrayList<>();
-        Terms brandTerms = aggregations.get("brandAgg");
+        Terms brandTerms = aggregations.get(aggName);
         List<? extends Terms.Bucket> buckets = brandTerms.getBuckets();
         buckets.forEach((item)->{
             String s = item.getKey().toString();
