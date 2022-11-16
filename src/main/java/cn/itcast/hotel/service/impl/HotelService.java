@@ -9,7 +9,6 @@ import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -23,12 +22,10 @@ import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortMode;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.stream.Location;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -66,8 +63,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
                 new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
         });
-
-
 
         searchRequest.source().query(isAD);
 
