@@ -138,8 +138,8 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
     private void buildAggregation(SearchRequest searchRequest) {
         searchRequest.source().aggregation(AggregationBuilders.terms("brandAgg").field("brand").size(100));
-        searchRequest.source().aggregation(AggregationBuilders.terms("cityAgg").field("brand").size(100));
-        searchRequest.source().aggregation(AggregationBuilders.terms("starAgg").field("brand").size(100));
+        searchRequest.source().aggregation(AggregationBuilders.terms("cityAgg").field("city").size(100));
+        searchRequest.source().aggregation(AggregationBuilders.terms("starAgg").field("star").size(100));
     }
 
     private PageResult getPageResult(SearchResponse searchResponse) {
