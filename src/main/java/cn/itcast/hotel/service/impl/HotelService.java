@@ -116,6 +116,12 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         ArrayList<String> brandList = getAggByName(aggregations,"brandAgg");
         bucketHashes.put("品牌",brandList);
+
+        ArrayList<String> cityList = getAggByName(aggregations,"cityAgg");
+        bucketHashes.put("城市",cityList);
+
+        ArrayList<String> starList = getAggByName(aggregations,"starAgg");
+        bucketHashes.put("星级",starList);
         return bucketHashes;
     }
 
@@ -131,9 +137,9 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     }
 
     private void buildAggregation(SearchRequest searchRequest) {
-        searchRequest.source().aggregation(AggregationBuilders.terms("brandAgg").field("brand").size(50));
-        searchRequest.source().aggregation(AggregationBuilders.terms("cityAgg").field("brand").size(50));
-        searchRequest.source().aggregation(AggregationBuilders.terms("starAgg").field("brand").size(50));
+        searchRequest.source().aggregation(AggregationBuilders.terms("brandAgg").field("brand").size(100));
+        searchRequest.source().aggregation(AggregationBuilders.terms("cityAgg").field("brand").size(100));
+        searchRequest.source().aggregation(AggregationBuilders.terms("starAgg").field("brand").size(100));
     }
 
     private PageResult getPageResult(SearchResponse searchResponse) {
