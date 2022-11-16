@@ -49,32 +49,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         try {
             SearchRequest searchRequest = new SearchRequest("hotel");
 
-            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-            String key = params.getKey();
-            if (StringUtils.isNotBlank(key)) {
-                boolQuery.must(QueryBuilders.matchQuery("all", key));
-            }else {
-                boolQuery.must(QueryBuilders.matchAllQuery());
-            }
-            if (params.getBrand() != null && !params.getBrand().equals("")) {
-                boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
-            }
-            if (params.getCity() != null && !params.getCity().equals("")) {
-                boolQuery.filter(QueryBuilders.termQuery("city", params.getCity()));
-            }
-            if (params.getStarName() != null && !params.getStarName().equals("")) {
-                boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
-            }
-            if (params.getMaxPrice() != null && params.getMinPrice() != null) {
-                boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
-            }
-
-            FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
-                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
-                            ,ScoreFunctionBuilders.weightFactorFunction(10))
-            });
-
-            searchRequest.source().query(isAD);
+            buildBasicQuery(params, searchRequest);
 
             Integer page = params.getPage();
 
