@@ -126,7 +126,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             bucketHashes.put("city",cityList);
 
             ArrayList<String> starList = getAggByName(aggregations,"starAgg");
-            bucketHashes.put("star",starList);
+            bucketHashes.put("starName",starList);
         } catch (IOException e) {
             throw new RuntimeException("搜索失败!",e);
         }
