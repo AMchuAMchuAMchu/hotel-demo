@@ -37,7 +37,7 @@ public class AggTest {
     @Test
     void testAggHeima(){
 
-        Map<String, List<String>> filters = iHotelService.filters();
+        Map<String, List<String>> filters = iHotelService.filters(null);
 
         System.out.println(filters);
 

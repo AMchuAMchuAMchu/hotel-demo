@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Description ==> TODO
  * BelongsProject ==> hotel-demo
@@ -30,9 +33,9 @@ public class HotelController {
         return iHotelService.search(requestParams);
     }
 
-//    @PostMapping("/filters")
-//    public PageResult filter(@RequestBody RequestParams requestParams){
-//        return iHotelService.search(requestParams);
-//    }
+    @PostMapping("/filters")
+    public Map<String, List<String>> filter(@RequestBody RequestParams requestParams){
+        return iHotelService.filters(requestParams);
+    }
 
 }

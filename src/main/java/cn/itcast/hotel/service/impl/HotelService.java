@@ -48,29 +48,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         SearchRequest searchRequest = new SearchRequest("hotel");
 
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        if (StringUtils.isNotBlank(params.getKey())) {
-            boolQuery.must(QueryBuilders.matchQuery("all", params.getKey()));
-        }
-        if (params.getBrand() != null && !params.getBrand().equals("")) {
-            boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
-        }
-        if (params.getCity() != null && !params.getCity().equals("")) {
-            boolQuery.filter(QueryBuilders.termQuery("city", params.getCity()));
-        }
-        if (params.getStarName() != null && !params.getStarName().equals("")) {
-            boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
-        }
-        if (params.getMaxPrice() != null && params.getMinPrice() != null) {
-            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
-        }
-
-        FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
-                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
-                        ,ScoreFunctionBuilders.weightFactorFunction(10))
-        });
-
-        searchRequest.source().query(isAD);
+        buildBasicQuery(params, searchRequest);
 
         Integer page = params.getPage();
 
@@ -100,9 +78,38 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
     }
 
+    private void buildBasicQuery(RequestParams params, SearchRequest searchRequest) {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        if (StringUtils.isNotBlank(params.getKey())) {
+            boolQuery.must(QueryBuilders.matchQuery("all", params.getKey()));
+        }else {
+            boolQuery.must(QueryBuilders.matchAllQuery());
+        }
+        if (params.getBrand() != null && !params.getBrand().equals("")) {
+            boolQuery.must(QueryBuilders.termQuery("brand", params.getBrand()));
+        }
+        if (params.getCity() != null && !params.getCity().equals("")) {
+            boolQuery.filter(QueryBuilders.termQuery("city", params.getCity()));
+        }
+        if (params.getStarName() != null && !params.getStarName().equals("")) {
+            boolQuery.filter(QueryBuilders.termQuery("starName", params.getStarName()));
+        }
+        if (params.getMaxPrice() != null && params.getMinPrice() != null) {
+            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
+        }
+
+        FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
+                        ,ScoreFunctionBuilders.weightFactorFunction(10))
+        });
+
+        searchRequest.source().query(isAD);
+    }
+
     @Override
-    public Map<String, List<String>> filters() {
+    public Map<String, List<String>> filters(RequestParams requestParams) {
         SearchRequest searchRequest = new SearchRequest("hotel");
+        buildBasicQuery(requestParams,searchRequest);
         searchRequest.source().size(0);
         buildAggregation(searchRequest);
         SearchResponse search = null;
