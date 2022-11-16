@@ -44,7 +44,10 @@ public class AggTest {
 
         List<? extends Terms.Bucket> buckets = brandTerms.getBuckets();
 
-        buckets.forEach(System.out::println);
+        buckets.forEach((item)->{
+            String s = item.getKey().toString();
+            System.out.println(s);
+        });
 
 
     }
