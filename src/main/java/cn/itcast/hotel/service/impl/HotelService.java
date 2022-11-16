@@ -115,19 +115,18 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             buildBasicQuery(requestParams,searchRequest);
             searchRequest.source().size(0);
             buildAggregation(searchRequest);
-            SearchResponse search = null;
-            search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
-            bucketHashes = new HashMap<>();
+            SearchResponse search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+            bucketHashes = new HashMap<>(3);
             Aggregations aggregations = search.getAggregations();
 
             ArrayList<String> brandList = getAggByName(aggregations,"brandAgg");
-            bucketHashes.put("品牌",brandList);
+            bucketHashes.put("brand",brandList);
 
             ArrayList<String> cityList = getAggByName(aggregations,"cityAgg");
-            bucketHashes.put("城市",cityList);
+            bucketHashes.put("city",cityList);
 
             ArrayList<String> starList = getAggByName(aggregations,"starAgg");
-            bucketHashes.put("星级",starList);
+            bucketHashes.put("star",starList);
         } catch (IOException e) {
             throw new RuntimeException("搜索失败!",e);
         }
@@ -135,11 +134,11 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     }
 
     private ArrayList<String> getAggByName(Aggregations aggregations,String aggName) {
-        ArrayList<String> brandList = new ArrayList<>();
         Terms brandTerms = aggregations.get(aggName);
         List<? extends Terms.Bucket> buckets = brandTerms.getBuckets();
+        ArrayList<String> brandList = new ArrayList<>(buckets.size());
         buckets.forEach((item)->{
-            String s = item.getKey().toString();
+            String s = item.getKeyAsString();
             brandList.add(s);
         });
         return brandList;
