@@ -7,8 +7,8 @@ import cn.itcast.hotel.pojo.PageResult;
 import cn.itcast.hotel.pojo.RequestParams;
 import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -80,7 +80,8 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
     private void buildBasicQuery(RequestParams params, SearchRequest searchRequest) {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        if (StringUtils.isNotBlank(params.getKey())) {
+        String key = params.getKey();
+        if (StringUtils.isNotBlank(key)) {
             boolQuery.must(QueryBuilders.matchQuery("all", params.getKey()));
         }else {
             boolQuery.must(QueryBuilders.matchAllQuery());
