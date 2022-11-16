@@ -1,5 +1,6 @@
 package cn.itcast.hotel;
 
+import cn.itcast.hotel.service.IHotelService;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description ==> TODO
@@ -28,6 +30,19 @@ public class AggTest {
 
     @Autowired
     private RestHighLevelClient request;
+
+    @Autowired
+    private IHotelService iHotelService;
+
+    @Test
+    void testAggHeima(){
+
+        Map<String, List<String>> filters = iHotelService.filters();
+
+        System.out.println(filters);
+
+
+    }
 
     @Test
     void testAggBucket() throws IOException {

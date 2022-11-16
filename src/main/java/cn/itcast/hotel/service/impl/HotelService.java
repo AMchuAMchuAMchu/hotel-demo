@@ -21,6 +21,9 @@ import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -92,6 +98,42 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
         return getPageResult(searchResponse);
 
+    }
+
+    @Override
+    public Map<String, List<String>> filters() {
+        SearchRequest searchRequest = new SearchRequest("hotel");
+        searchRequest.source().size(0);
+        buildAggregation(searchRequest);
+        SearchResponse search = null;
+        try {
+            search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        HashMap<String, List<String>> bucketHashes = new HashMap<>();
+        Aggregations aggregations = search.getAggregations();
+
+        ArrayList<String> brandList = getAggByName(aggregations,"brandAgg");
+        bucketHashes.put("品牌",brandList);
+        return bucketHashes;
+    }
+
+    private ArrayList<String> getAggByName(Aggregations aggregations,String aggName) {
+        ArrayList<String> brandList = new ArrayList<>();
+        Terms brandTerms = aggregations.get("brandAgg");
+        List<? extends Terms.Bucket> buckets = brandTerms.getBuckets();
+        buckets.forEach((item)->{
+            String s = item.getKey().toString();
+            brandList.add(s);
+        });
+        return brandList;
+    }
+
+    private void buildAggregation(SearchRequest searchRequest) {
+        searchRequest.source().aggregation(AggregationBuilders.terms("brandAgg").field("brand").size(50));
+        searchRequest.source().aggregation(AggregationBuilders.terms("cityAgg").field("brand").size(50));
+        searchRequest.source().aggregation(AggregationBuilders.terms("starAgg").field("brand").size(50));
     }
 
     private PageResult getPageResult(SearchResponse searchResponse) {
