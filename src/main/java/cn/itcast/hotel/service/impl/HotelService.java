@@ -46,35 +46,35 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     @Override
     public PageResult search(RequestParams params) {
 
-        SearchRequest searchRequest = new SearchRequest("hotel");
-
-        buildBasicQuery(params, searchRequest);
-
-        Integer page = params.getPage();
-
-        Integer size = params.getSize();
-
-        searchRequest.source().from((page - 1) * size).size(size);
-
-
-        String location = params.getLocation();
-
-
-        if (location!=null&&!location.equals("")){
-            searchRequest.source()
-                    .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
-                            .order(SortOrder.ASC)
-                            .unit(DistanceUnit.KILOMETERS));
-        }
-
-        SearchResponse searchResponse = null;
         try {
-            searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            SearchRequest searchRequest = new SearchRequest("hotel");
 
-        return getPageResult(searchResponse);
+            buildBasicQuery(params, searchRequest);
+
+            Integer page = params.getPage();
+
+            Integer size = params.getSize();
+
+            searchRequest.source().from((page - 1) * size).size(size);
+
+
+            String location = params.getLocation();
+
+
+            if (location!=null&&!location.equals("")){
+                searchRequest.source()
+                        .sort(SortBuilders.geoDistanceSort("location",new GeoPoint(location))
+                                .order(SortOrder.ASC)
+                                .unit(DistanceUnit.KILOMETERS));
+            }
+
+            SearchResponse searchResponse = null;
+            searchResponse = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+
+            return getPageResult(searchResponse);
+        } catch (IOException e) {
+            throw new RuntimeException("搜索失败!",e);
+        }
 
     }
 
@@ -82,7 +82,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         String key = params.getKey();
         if (StringUtils.isNotBlank(key)) {
-            boolQuery.must(QueryBuilders.matchQuery("all", params.getKey()));
+            boolQuery.must(QueryBuilders.matchQuery("all", key));
         }else {
             boolQuery.must(QueryBuilders.matchAllQuery());
         }
@@ -109,27 +109,28 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
 
     @Override
     public Map<String, List<String>> filters(RequestParams requestParams) {
-        SearchRequest searchRequest = new SearchRequest("hotel");
-        buildBasicQuery(requestParams,searchRequest);
-        searchRequest.source().size(0);
-        buildAggregation(searchRequest);
-        SearchResponse search = null;
+        HashMap<String, List<String>> bucketHashes = null;
         try {
+            SearchRequest searchRequest = new SearchRequest("hotel");
+            buildBasicQuery(requestParams,searchRequest);
+            searchRequest.source().size(0);
+            buildAggregation(searchRequest);
+            SearchResponse search = null;
             search = rhlc.search(searchRequest, RequestOptions.DEFAULT);
+            bucketHashes = new HashMap<>();
+            Aggregations aggregations = search.getAggregations();
+
+            ArrayList<String> brandList = getAggByName(aggregations,"brandAgg");
+            bucketHashes.put("品牌",brandList);
+
+            ArrayList<String> cityList = getAggByName(aggregations,"cityAgg");
+            bucketHashes.put("城市",cityList);
+
+            ArrayList<String> starList = getAggByName(aggregations,"starAgg");
+            bucketHashes.put("星级",starList);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("搜索失败!",e);
         }
-        HashMap<String, List<String>> bucketHashes = new HashMap<>();
-        Aggregations aggregations = search.getAggregations();
-
-        ArrayList<String> brandList = getAggByName(aggregations,"brandAgg");
-        bucketHashes.put("品牌",brandList);
-
-        ArrayList<String> cityList = getAggByName(aggregations,"cityAgg");
-        bucketHashes.put("城市",cityList);
-
-        ArrayList<String> starList = getAggByName(aggregations,"starAgg");
-        bucketHashes.put("星级",starList);
         return bucketHashes;
     }
 

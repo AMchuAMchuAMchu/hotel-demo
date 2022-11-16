@@ -1,7 +1,6 @@
 package cn.itcast.hotel.pojo;
 
 import lombok.Data;
-import org.elasticsearch.index.translog.Translog;
 
 
 /**
