@@ -62,8 +62,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(params.getMinPrice()).lte(params.getMaxPrice()));
         }
 
-
-
         FunctionScoreQueryBuilder isAD = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
                 new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true)
                         ,ScoreFunctionBuilders.weightFactorFunction(10))
